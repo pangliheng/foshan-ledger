@@ -825,6 +825,10 @@ function importData(aoa, fileName){
     imported++;
   }
   initialCount=rows.length;
+  // 导入后重置筛选器，确保所有数据可见
+  $('filterMonth').value='';
+  $('searchInput').value='';
+  $('filterName').value='';
   renderTable();updateStats();save();
   toast('✓ 导入了 '+imported+' 条', 'success');
 }
@@ -866,7 +870,7 @@ function renderTable(){
 
   var data=rows.map(function(r,i){return{r:r,idx:i}}).filter(function(x){
     var d=x.r.d;
-    if(fm&&(d[0]||'').substring(5,7)!==fm)return false;
+    if(fm&&d[0]&&(d[0]||'').substring(5,7)!==fm)return false;
     if(search){var s=search;var hit=(d[1]||'').indexOf(s)>=0||(d[3]||'').toLowerCase().indexOf(s)>=0||(d[2]||'').indexOf(s)>=0;if(!hit)return false}
     if(fname&&(d[1]||'').indexOf(fname)<0)return false;
     return true;

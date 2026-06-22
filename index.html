@@ -769,7 +769,7 @@ function handleFile(e){
     var r2=new FileReader();
     r2.onload=function(ev){
       try{
-        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true});
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true,cellDates:true});
         var aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true});
         importData(aoa,file.name);
       }catch(err){toast('导入失败：'+err.message,'error');console.error(err)}

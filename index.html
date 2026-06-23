@@ -596,7 +596,7 @@ tr.row-new:hover td{background:#dbeafe!important}
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.27</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.28</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -938,7 +938,7 @@ function renderTable(){
     var idx=data[i].idx;
     h+='<tr'+(r._new?' class="row-new"':'')+'>';
     h+='<td>'+(i+1)+'</td>';
-    h+='<td><span style="cursor:pointer" onclick="editCell('+idx+',0)" title="点击编辑">'+esc(d[0])+'</span></td>';
+    h+='<td><span style="cursor:pointer'+(d[0]?'':'color:#ef4444')+'" onclick="editCell('+idx+',0)" title="点击编辑">'+(d[0] ? esc(d[0]) : '<i>点击设日期</i>')+'</span></td>';
     h+='<td><b><span style="cursor:pointer" onclick="editCell('+idx+',1)" title="点击编辑">'+esc(d[1])+'</span></b></td>';
     h+='<td><span style="cursor:pointer" onclick="editCell('+idx+',2)" title="点击编辑">'+esc(d[2])+'</span></td>';
     h+='<td><span style="cursor:pointer" onclick="editCell('+idx+',3)" title="点击编辑" style="font-family:monospace;font-size:11px">'+esc(d[3])+'</span></td>';

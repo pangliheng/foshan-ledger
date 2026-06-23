@@ -596,7 +596,7 @@ tr.row-new:hover td{background:#dbeafe!important}
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.30</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.31</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -886,18 +886,27 @@ function showImportDebug(headerRow,colIdxMap,debugRows,imported){
   div.style.display='block';
 }
 
-// ===== 从服务器加载台账数据 =====
+// ===== 从服务器加载台账数据（JSON，日期已预转换） =====
 function loadFromServer(){
   toast('正在从服务器加载...','success');
-  fetch('ledger-data.csv?nocache=1')
-    .then(function(res){return res.text()})
-    .then(function(text){
-      if(text.charCodeAt(0)===0xFEFF)text=text.substring(1);
-      var lines=text.split(/\r?\n/).filter(function(l){return l.trim()});
-      var aoa=lines.map(function(l){return parseCSV(l,',')});
-      importData(aoa, 'ledger-data.csv');
+  fetch('ledger-data.json?nocache=1')
+    .then(function(res){
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
     })
-    .catch(function(){toast('加载失败，请检查网络','error')});
+    .then(function(data){
+      rows = data;
+      initialCount = rows.length;
+      $('filterMonth').value='';
+      $('searchInput').value='';
+      $('filterName').value='';
+      renderTable(); updateStats(); save();
+      toast('✓ 已加载 '+rows.length+' 条', 'success');
+    })
+    .catch(function(err){
+      toast('加载失败：'+err.message, 'error');
+      console.error(err);
+    });
 }
 
 // ===== 表单 =====

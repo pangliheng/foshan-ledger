@@ -594,7 +594,7 @@ tr.row-new:hover td{background:#dbeafe!important}
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.25</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.26</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -720,11 +720,12 @@ function dateConv(v){
     return excelSerialToYMD(v);
   }
   if(typeof v==='string'){
-    var m=v.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+    var s=v.trim();
+    var m=s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
     if(m)return m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0');
-    var m2=v.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+    var m2=s.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
     if(m2)return m2[1]+'-'+String(m2[2]).padStart(2,'0')+'-'+String(m2[3]).padStart(2,'0');
-    return v.trim();
+    return s;
   }
   try{var d2=new Date(v);if(!isNaN(d2.getTime()))return d2.getFullYear()+'-'+String(d2.getMonth()+1).padStart(2,'0')+'-'+String(d2.getDate()).padStart(2,'0');}catch(e){}
   return String(v);
@@ -759,7 +760,12 @@ function mapRow(rowData, colIdxMap){
     var ci=colIdxMap[i];
     if(ci>=0&&ci<8){
       var v=rowData[i];
-      if(ci===0)v=dateConv(v);
+      if(ci===0){
+        var dv=dateConv(v);
+        // 兜底：如果 dateConv 返回空但原始值非空，保留原始值方便排查
+        if(dv==='' && v!=null && String(v)!=='') dv=String(v);
+        v=dv;
+      }
       else if(ci===2&&typeof v==='number')v=String(Math.round(v));
       else if(v==null)v='';
       arr[ci]=String(v);
@@ -827,6 +833,12 @@ function importData(aoa, fileName){
   var headerRow=aoa[hIdx];
   var colIdxMap=[];
   for(var c=0;c<headerRow.length;c++){colIdxMap.push(mapHeader(headerRow[c]))}
+  // 调试：输出表头映射和前几行原始数据
+  console.log('导入调试：表头行', headerRow);
+  console.log('导入调试：列映射', colIdxMap);
+  for(var rr=hIdx+1;rr<Math.min(hIdx+4,aoa.length);rr++){
+    console.log('导入调试：原始行'+rr, aoa[rr], '→ 转换后', mapRow(aoa[rr], colIdxMap));
+  }
   var imported=0;
   for(var r=hIdx+1;r<aoa.length;r++){
     var arr=mapRow(aoa[r],colIdxMap);

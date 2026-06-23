@@ -596,7 +596,7 @@ tr.row-new:hover td{background:#dbeafe!important}
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.28</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.29</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -720,7 +720,7 @@ function dateConv(v){
     if(isNaN(v.getTime()))return '';
     return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
   }
-  if(typeof v==='number'&&!isNaN(v)&&v>0&&v<100000){
+  if(typeof v==='number'&&!isNaN(v)&&v>1&&v<1000000){
     return excelSerialToYMD(v);
   }
   if(typeof v==='string'){
@@ -789,8 +789,8 @@ function handleFile(e){
     var r2=new FileReader();
     r2.onload=function(ev){
       try{
-        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true});
-        var aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true});
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+        var aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
         importData(aoa,file.name);
       }catch(err){toast('导入失败：'+err.message,'error');console.error(err)}
     };
@@ -860,7 +860,11 @@ function importData(aoa, fileName){
   renderTable();updateStats();save();
   // 显示导入调试信息
   showImportDebug(headerRow,colIdxMap,debugRows,imported);
-  toast('✓ 导入了 '+imported+' 条', 'success');
+  // toast 中也显示日期诊断
+  var diagMsg=showImportDebug(headerRow,colIdxMap,debugRows,imported);
+  var toastMsg='✓ 导入了 '+imported+' 条';
+  if(diagMsg) toastMsg+='\n'+diagMsg;
+  toast(toastMsg, 'success');
 }
 
 function showImportDebug(headerRow,colIdxMap,debugRows,imported){

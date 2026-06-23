@@ -594,7 +594,7 @@ tr.row-new:hover td{background:#dbeafe!important}
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.24</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.25</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -779,8 +779,8 @@ function handleFile(e){
     var r2=new FileReader();
     r2.onload=function(ev){
       try{
-        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true,cellDates:true});
-        var aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true,cellDates:true});
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',raw:true});
+        var aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true});
         importData(aoa,file.name);
       }catch(err){toast('导入失败：'+err.message,'error');console.error(err)}
     };

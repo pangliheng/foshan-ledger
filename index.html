@@ -586,17 +586,14 @@ tr.row-new:hover td{background:#dbeafe!important}
   header{padding:20px}
   header h1{font-size:20px}
   .card{padding:18px}
-  .toolbar button{font-size:12px;padding:7px 12px}
-  .import-debug{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;margin:10px 0;color:#856404;font-size:13px;line-height:1.6}
-  .import-debug b{color:#d39e00}
-}
+  .toolbar button{font-size:12px;padding:7px 12px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.31</span></h1>
+<h1><span class="logo-icon">📋</span>佛山客户网络台账 <span style="font-size:12px;opacity:.6;font-weight:400">v6.32 - 纯净版</span></h1>
 <div class="sub">开户即录 · 一键导出 · 本地安全存储</div>
 <div class="meta" id="storageInfo">💾 数据自动保存在浏览器本地</div>
 <div class="toolbar">
@@ -609,7 +606,6 @@ tr.row-new:hover td{background:#dbeafe!important}
 </div>
 </header>
 
-<div id="importDebug" class="import-debug" style="display:none"></div>
 
 <div class="stats">
 <div class="stat s1"><div class="num" id="statTotal">0</div><div class="lbl">总客户数</div><div class="trend">全部记录</div></div>
@@ -844,12 +840,10 @@ function importData(aoa, fileName){
     console.log('导入调试：原始行'+rr, aoa[rr], '→ 转换后', mapRow(aoa[rr], colIdxMap));
   }
   var imported=0;
-  var debugRows=[];
   for(var r=hIdx+1;r<aoa.length;r++){
     var arr=mapRow(aoa[r],colIdxMap);
     if(arr.every(function(v){return!v}))continue;
     rows.push({d:arr,_ts:Date.now(),_new:false});
-    if(debugRows.length<3) debugRows.push({raw:aoa[r],converted:arr});
     imported++;
   }
   initialCount=rows.length;
@@ -858,32 +852,7 @@ function importData(aoa, fileName){
   $('searchInput').value='';
   $('filterName').value='';
   renderTable();updateStats();save();
-  // 显示导入调试信息
-  showImportDebug(headerRow,colIdxMap,debugRows,imported);
-  // toast 中也显示日期诊断
-  var diagMsg=showImportDebug(headerRow,colIdxMap,debugRows,imported);
-  var toastMsg='✓ 导入了 '+imported+' 条';
-  if(diagMsg) toastMsg+='\n'+diagMsg;
-  toast(toastMsg, 'success');
-}
-
-function showImportDebug(headerRow,colIdxMap,debugRows,imported){
-  var div=$('importDebug');
-  if(!div)return;
-  var dateColIdx=colIdxMap.indexOf(0);
-  var html='<b>导入诊断：</b>共导入 '+imported+' 条。"开户时间"对应原表第 '+(dateColIdx>=0?dateColIdx+1:'未识别')+' 列。<br>';
-  if(dateColIdx>=0){
-    html+='前3行日期原始值：';
-    debugRows.forEach(function(item,i){
-      var rawVal=item.raw[dateColIdx];
-      var converted=item.converted[0];
-      var type=typeof rawVal;
-      if(rawVal instanceof Date) type='Date';
-      html+='[行'+(i+1)+'] '+type+' '+JSON.stringify(rawVal)+' → "'+converted+'" ';
-    });
-  }
-  div.innerHTML=html;
-  div.style.display='block';
+  toast('✓ 导入了 '+imported+' 条', 'success');
 }
 
 // ===== 从服务器加载台账数据（JSON，日期已预转换） =====
